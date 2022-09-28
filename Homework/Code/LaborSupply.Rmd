@@ -1,0 +1,165 @@
+---
+title: "Homework"
+author: "Vladimir Dimitrov, Vlad Balabaev"
+date: "28 09 2022"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+#Setup----
+
+library(tidyverse)
+library(openxlsx)
+library(pastecs)
+library(foreign)
+library(dplyr)
+library(MASS)
+library(VGAM)
+
+
+path = "C:\\Users\\user\\Desktop\\Applied econometrics\\Data\\r22iall_31.sav"
+
+dataset = read.spss(path, to.data.frame=TRUE, use.value.labels=FALSE) #library(foreign)
+
+is.data.frame(dataset)
+
+#Part1----
+#1
+sum = stat.desc(dataset)
+sum
+openxlsx::write.xlsx(sum, file = "sum.xlsx")  #library(tidyverse) #library(openxlsx)
+
+
+#2 
+df = filter(dataset, (dataset$r_age>17 & dataset$r_age<60 & dataset$rh5==1) | 
+              (dataset$r_age>17 & dataset$r_age<55 & dataset$rh5==2)) #library(dplyr) 
+df[, 39:883][df[, 39:883]>99999990] = NA
+
+sum = stat.desc(df) #library(pastecs)
+sum
+openxlsx::write.xlsx(sum, file = "sum.xlsx") #library(tidyverse) #library(openxlsx)
+
+
+
+#3
+empl = ifelse(df$rj1 == 5, 0, 1)
+
+
+#4
+stat.desc(df$rj60)
+lwage = log(df$rj10)
+lincome = log(df$rj60+1)
+
+
+#5
+educ0 = ifelse(df$r_educ < 11|df$r_educ == 12|df$r_educ == 13, 1, 0)
+educ1 = ifelse(df$r_educ > 13&df$r_educ < 21|df$r_educ == 11, 1, 0)
+educ2 = ifelse(df$r_educ >= 21, 1, 0)
+
+e=educ0+educ1+educ2
+summary(e)
+
+
+#6
+summary(df$rj6.1a) 
+summary(df$rj6.2)
+df$rj6.1a = ifelse(df$rj6.2 > 112 & df$rj6.1a > 16, NA, df$rj6.1a)
+
+
+#7
+nonlabinc = ifelse(df$rj10>0, df$rj60 - df$rj10, df$rj60)
+summary(nonlabinc)
+nonlabinc[nonlabinc < 0] = NA
+
+#8
+hourwage = (df$rj10 / df$rj7.1) / df$rj6.1a
+
+#9
+lhourwage = log(hourwage)
+lnonlabinc = log(nonlabinc + 1)
+hours = df$rj6.1a
+
+#10 
+hist(lhourwage)
+hist(hourwage)
+
+library(psych)
+
+#11
+married = ifelse(df$r_marst == 2, 1, 0)
+kids18 = ifelse(df$rj72.173 > 0, 1, 0 )
+female = df$rh5-1  
+
+df = cbind(empl, lwage, lincome, educ0, educ1, educ2,lhourwage,lnonlabinc,hours,married,kids18,female,df)
+
+
+#Part2----
+#1
+summary(lm(hours ~ lhourwage + lnonlabinc+r_age+I(r_age^2)
+           +educ1+educ2+married+kids18, 
+           data = df)) 
+summary(lm(hours ~ lhourwage+
+           +educ1+educ2+married, 
+           data = df[df$rh5==2,])) #for women
+
+
+#2
+summary(rlm(hours ~ lhourwage + lnonlabinc+r_age+I(r_age^2)
+            +educ1+educ2+married+kids18, 
+            data = df[df$rh5==2,])) #robust #library(MASS)
+
+summary(rlm(hours ~ lhourwage + lnonlabinc+I(r_age^2)
+            +educ1+educ2+married, 
+            data = df[df$rh5==2,]))
+#3
+mean(df[df$rh5==2,]$hours, na.rm = TRUE)
+-0.2112/mean(df[df$rh5==2,]$hours, na.rm = TRUE)
+
+
+#Part3----
+#1
+model = lm(lhourwage ~ female + r_age+I(r_age^2)+educ1+educ2, 
+           data = df, na.action=na.exclude)
+model = rlm(lhourwage ~ female + r_age+I(r_age^2)+educ1+educ2, 
+          data = df, na.action=na.exclude)
+
+#2
+df = data.frame(predict(model,df), df) #or fitted.values(model)
+names(df)[1] <- "lhourwage_p"
+summary(df$lhourwage_p)
+summary(df$lhourwage)
+
+
+#3
+df=df %>% 
+  mutate(lhourwage_p = ifelse(is.na(lhourwage), lhourwage_p, lhourwage))
+summary(df$lhourwage)
+summary(df$lhourwage_p)
+
+#4
+df = data.frame(hours_p=df$hours, df)
+df=df %>% 
+  mutate(hours_p = ifelse(empl==0, 0, hours_p))
+summary(df$hours)
+summary(df$hours_p)
+
+#5
+summary(rlm(hours_p ~ lhourwage_p + lnonlabinc+r_age+I(r_age^2)+educ1+educ2+married+kids18, data = df[df$rh5==2,])) 
+summary(lm(hours_p ~ lhourwage_p + lnonlabinc+r_age+I(r_age^2)+educ1+educ2+married+kids18, data = df[df$rh5==2,])) 
+cor(cbind(df$lhourwage_p, df$educ2), use = "complete.obs")
+summary(rlm(hours_p ~ lhourwage_p + lnonlabinc+r_age+I(r_age^2)+educ1+educ2+married+kids18+0, data = df[df$rh5==2,])) #+0 in factor list helps sometimes
+
+#6
+mean(df[df$rh5==2,]$hours_p, na.rm = TRUE)
+-0.0695/mean(df[df$rh5==2,]$hours_p, na.rm = TRUE)
+
+
+
+```
+

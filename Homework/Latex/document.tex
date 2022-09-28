@@ -1,0 +1,156 @@
+\documentclass[a4paper,12pt]{article}
+
+%%% Работа с русским языком
+\usepackage{cmap}					% поиск в PDF
+\usepackage{mathtext} 				% русские буквы в фомулах
+\usepackage[T2A]{fontenc}			% кодировка
+\usepackage[utf8]{inputenc}			% кодировка исходного текста
+\usepackage[english,russian]{babel}	% локализация и переносы
+\usepackage{float}
+%%% Дополнительная работа с математикой
+\usepackage{amsfonts,amssymb,amsthm,mathtools} % AMS
+\usepackage{amsmath}
+\usepackage{icomma} % "Умная" запятая: $0,2$ --- число, $0, 2$ --- перечисление
+
+%% Номера формул
+%\mathtoolsset{showonlyrefs=true} % Показывать номера только у тех формул, на которые есть \eqref{} в тексте.
+
+%% Шрифты
+\usepackage{euscript}	 % Шрифт Евклид
+\usepackage{mathrsfs} % Красивый матшрифт
+
+%% Свои команды
+\DeclareMathOperator{\sgn}{\mathop{sgn}}
+
+%% Перенос знаков в формулах (по Львовскому)
+\newcommand*{\hm}[1]{#1\nobreak\discretionary{}
+	{\hbox{$\mathsurround=0pt #1$}}{}}
+
+%%% Работа с картинками
+\usepackage{graphicx}  % Для вставки рисунков
+\graphicspath{{images/}{images2/}}  % папки с картинками
+\setlength\fboxsep{3pt} % Отступ рамки \fbox{} от рисунка
+\setlength\fboxrule{1pt} % Толщина линий рамки \fbox{}
+\usepackage{wrapfig} % Обтекание рисунков и таблиц текстом
+
+%%% Работа с таблицами
+\usepackage{array,tabularx,tabulary,booktabs} % Дополнительная работа с таблицами
+\usepackage{longtable}  % Длинные таблицы
+\usepackage{multirow} % Слияние строк в таблице
+\usepackage[unicode, pdftex]{hyperref}
+\usepackage{xcolor}
+\definecolor{urlcolor}{HTML}{0000ff}
+\definecolor{linkcolor}{HTML}{799B03}
+\hypersetup{pdfstartview=FitH,  linkcolor=linkcolor,urlcolor=urlcolor, colorlinks=true}
+%%% Заголовок
+\author{Владимир Димитров, Владислав Балабаев гр. 19701}
+\title{Описание работы}
+\date{\today}
+
+\begin{document}
+	\maketitle
+	\newpage
+	\section{Отчет по заданию}
+	Первая часть задания направлена на создания новых переменных. В таблице 1 представлены новые переменные. 
+
+	\begin{figure}[H]
+		\centering
+		\includegraphics[width=0.9\linewidth]{C:/Users/user/DL_audio/Work/Отчет/Image/table}
+		
+		\label{fig:table}
+	\end{figure}
+	\begin{center}
+		Таблица 1: новые переменные
+	\end{center}
+	
+	В таблице 2 выведены описательный статистики.
+	
+	\begin{figure}[H]
+		\centering
+		\includegraphics[width=0.9\linewidth]{C:/Users/user/DL_audio/Work/Отчет/Image/table2}
+		\label{fig:table2}
+	\end{figure}
+	\begin{center} Таблица 2: описательные статистики
+	\end{center}
+	Была оценена модель предложения труда для женщин. В качестве зависимой переменой выступали часы работы, а независимой переменной были: логарифм почасовой зарплаты и нетрудового дохода, возраст, возраст в квадрате, фиктивные переменные для образования, семейное положение и наличие детей до 18 лет. Результаты представлены в таблице 3. На уровне значимости 5 процентов, значимыми фактами оказались: логарифм почасовой зарплаты, получение высшего образования и семейное положение.
+	\begin{figure}[H]
+		\centering
+		\includegraphics[width=1\linewidth]{C:/Users/user/DL_audio/Work/Отчет/Image/tabl3}
+		\label{fig:tabl3}
+	\end{figure}
+	\begin{center} Таблица 3: Наивная оценка регрессии
+	\end{center}
+	В результате последовательного удаления незначимых факторов, была получена регрессионная модель, где все переменные значимы на 5\%-ом уровне. На уровне значимости 5 процентов модель оказалась значимой.
+	
+	\begin{figure}[H]
+		\centering
+		\includegraphics[width=1\linewidth]{C:/Users/user/DL_audio/Work/Отчет/Image/tabl4}
+		\label{fig:tabl4}
+	\end{figure}
+	\begin{center} Таблица 4: Оценка регрессии после удаление признаков
+	\end{center}
+	Рассмотрим модель, которая является устойчивой к гетероскедастичности.
+	\begin{figure}[H]
+		\centering
+		\includegraphics[width=1\linewidth]{C:/Users/user/DL_audio/Work/Отчет/Image/tabl5}
+		\label{fig:tabl5}
+	\end{figure}
+	\begin{center} Таблица 5: Наивная робустная модель
+\end{center}
+	 	Многие факторы являются незначимыми. Проведем процедуру исключения незначимых факторов.
+	 	
+	 	\begin{figure}[H]
+	 		\centering
+	 		\includegraphics[width=1\linewidth]{C:/Users/user/DL_audio/Work/Отчет/Image/tabl6}
+	 		\label{fig:tabl6}
+	 	\end{figure}
+ 		\begin{center} Таблица 6: Робустная модель с значимыми признаками
+ 	\end{center}
+	 	Интерпретация полученных моделей: 
+	 	\begin{itemize}
+	 		\item наличие высшего образования у женщины уменьшает продолжительность ее рабочего дня на 54 минуты.
+	 		\item продолжительность рабочего дня женщины в среднем составляет 10 часов.
+	 		\item при увеличении нетрудового дохода на 1\% женщины работают на 0,0003 часа в день меньше.
+	 		
+	 	\end{itemize}
+ 	
+ Оцененный коэффициент эластичности равен -0,023. Следовательно, при росте платы на 1\% количество рабочих часов в день снижается на 0,023\%.
+ 
+ Для того чтобы оценки были состоятельны, нам необходимо учесть тех людей, которые не работают. Построим регрессионную модель, которая предсказывает значение заработной платы для неработающего населения.
+ 
+ \begin{figure}[H]
+ 	\centering
+ 	\includegraphics[width=1\linewidth]{C:/Users/user/DL_audio/Work/Отчет/Image/tabl7}
+ 	\label{fig:tabl7}
+ \end{figure}
+\begin{center}
+	Таблица 7: Модель для неработающего населения
+\end{center}
+
+Были созданы новые переменные, lhourwage\_p (предсказанные значения заработной платы на основе работающей выборки), hours\_p (0 для неработающего населения). В таблице 8 оценена модель устойчивая к гетероскедастичности.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=1\linewidth]{C:/Users/user/DL_audio/Work/Отчет/Image/tabl8}
+	\label{fig:tabl8}
+\end{figure}
+\begin{center}
+	Таблица 8: Предложения труда для женщин на полной выборке
+\end{center}
+Интерпретация полученных результатов:
+\begin{itemize}
+\item	наличие высшего образования у женщины уменьшает продолжительность ее рабочего дня на 38 минут
+\item если женщина состоит в зарегистрированном браке, то рабочее время сокращается в среднем 24 минуты
+\item c возрастом женщины работают в среднем на полчаса в день больше
+\end{itemize}
+Коэффициент эластичности предложения труда женщин по заработной плате в полной выборке составил -0,01. Интерпретация такова: при росте почасовой заработной платы на 1\% продолжительность рабочего дня снижается на 0,01\%.
+
+Как можно понять по данной работе, для более правдивых результатов необходимо использовать большую часть данных. 
+
+\newpage
+
+\Huge
+\href{}{КОД}
+ 
+\end{document}
+	
